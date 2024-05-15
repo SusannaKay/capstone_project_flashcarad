@@ -12,10 +12,6 @@ def flip():
     canvas.itemconfig(word, text=random_pair['English'], fill="white")
     
 
-    
-
-
-
 ## RANDOM FUNCTION ##
 
 def random_word():
@@ -32,6 +28,27 @@ def random_word():
 
     flip_timer = window.after(3000,flip)
 
+def remove ():
+    
+
+## words to learn ##
+
+def to_learn():
+    try: 
+        with open("data/words_to_learn.csv","a") as file:
+            file.write(','.join(random_pair.values()))
+            file.write('\n')
+    
+    except FileNotFoundError:
+        with open("data/words_to_learn.csv","w") as file:
+            file.write(','.join(random_pair.keys()))
+            file.write('\n')
+            file.write(','.join(random_pair.values()))
+            file.write('\n')
+
+
+    finally: 
+        random_word()
 
 ## -----------------UI----------------## 
 BACKGROUND_COLOR = "#B1DDC6"
@@ -57,16 +74,19 @@ yes = Button(image=right,highlightthickness=0,command=random_word)
 yes.grid(column=0,row=1)
 
 wrong = PhotoImage(file="images/wrong.png")
-no = Button(image=wrong,highlightthickness=0,command=random_word)
+no = Button(image=wrong,highlightthickness=0,command=to_learn)
 no.grid(column=1,row=1)
 
 ## ----------------------------- ##
 
-lista_parole= pd.read_csv("data/french_words.csv")
-dictionary = lista_parole.to_dict('records')
-
-random_word()
-
-
+try:
+    lista_parole= pd.read_csv("data/words_to_learn.csv")
+    dictionary = lista_parole.to_dict('records')
+except FileNotFoundError:
+    lista_parole = pd.read_csv("data/french_words.csv")
+    dictionary = lista_parole.to_dict('records')
+    
+finally:
+    random_word()
 
 window.mainloop()
