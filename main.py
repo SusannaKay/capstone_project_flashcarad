@@ -6,10 +6,10 @@ import time
 
 ## FLIP THE CARD ##
 
-def flip(english):
+def flip():
     canvas.itemconfig(card, image=back_card)
     canvas.itemconfig(title, text="English",fill="white")
-    canvas.itemconfig(word, text=english, fill="white")
+    canvas.itemconfig(word, text=random_pair['English'], fill="white")
     
 
     
@@ -19,6 +19,9 @@ def flip(english):
 ## RANDOM FUNCTION ##
 
 def random_word():
+    global flip_timer, random_pair
+    window.after_cancel(flip_timer)
+
     canvas.itemconfig(card, image=front_card)
     random_pair = random.choice(dictionary)
     english = random_pair['English']
@@ -27,7 +30,7 @@ def random_word():
     canvas.itemconfig(title, text="French", fill="black")
     canvas.itemconfig(word, text=french, fill="black")
 
-    window.after(3000,flip,english)
+    flip_timer = window.after(3000,flip)
 
 
 ## -----------------UI----------------## 
@@ -37,6 +40,7 @@ FONT = "Ariel"
 window = Tk()
 window.title("Flash Card Game")
 window.config(padx=50,pady=50,bg=BACKGROUND_COLOR)
+flip_timer = window.after(3000,flip)
 
 canvas = Canvas(height= 526, width= 800, bg=BACKGROUND_COLOR, highlightthickness=0)
 
