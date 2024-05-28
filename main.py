@@ -2,6 +2,7 @@ from tkinter import *
 import pandas as pd
 import random
 import time
+import csv
 
 
 ## FLIP THE CARD ##
@@ -18,36 +19,29 @@ def random_word():
     global flip_timer, random_pair
     window.after_cancel(flip_timer)
 
-    canvas.itemconfig(card, image=front_card)
+    canvas.itemconfig(card, image= front_card)
     random_pair = random.choice(dictionary)
     english = random_pair['English']
     french = random_pair['French']
-
+    
     canvas.itemconfig(title, text="French", fill="black")
     canvas.itemconfig(word, text=french, fill="black")
 
     flip_timer = window.after(3000,flip)
 
-def remove ():
+def remove():
+    dictionary.remove(random_pair)
+    data = pd.DataFrame(dictionary)
+    data.to_csv("data/words_to_learn.csv",  index=False)
+   
+    random_word()
+
+
+def add_word():
+        data = pd.DataFrame(dictionary)
+        data.to_csv("data/words_to_learn.csv",  index=False)
+
     
-
-## words to learn ##
-
-def to_learn():
-    try: 
-        with open("data/words_to_learn.csv","a") as file:
-            file.write(','.join(random_pair.values()))
-            file.write('\n')
-    
-    except FileNotFoundError:
-        with open("data/words_to_learn.csv","w") as file:
-            file.write(','.join(random_pair.keys()))
-            file.write('\n')
-            file.write(','.join(random_pair.values()))
-            file.write('\n')
-
-
-    finally: 
         random_word()
 
 ## -----------------UI----------------## 
@@ -70,23 +64,24 @@ word = canvas.create_text(400,263,text="Word", font=(FONT,60,"bold"))
 canvas.grid(column=0,row=0, columnspan=2)
 
 right = PhotoImage(file="images/right.png")
-yes = Button(image=right,highlightthickness=0,command=random_word)
+yes = Button(image=right,highlightthickness=0,command=remove)
 yes.grid(column=0,row=1)
 
 wrong = PhotoImage(file="images/wrong.png")
-no = Button(image=wrong,highlightthickness=0,command=to_learn)
+no = Button(image=wrong,highlightthickness=0,command=add_word)
 no.grid(column=1,row=1)
 
 ## ----------------------------- ##
 
 try:
     lista_parole= pd.read_csv("data/words_to_learn.csv")
-    dictionary = lista_parole.to_dict('records')
+    
 except FileNotFoundError:
     lista_parole = pd.read_csv("data/french_words.csv")
-    dictionary = lista_parole.to_dict('records')
+    
     
 finally:
+    dictionary = lista_parole.to_dict('records')
     random_word()
 
 window.mainloop()
